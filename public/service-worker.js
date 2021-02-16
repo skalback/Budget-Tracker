@@ -50,11 +50,14 @@ self.addEventListener(`fetch`, event => {
                     return response;
                 })
                 .catch(err => {
-                    caches.match(event.request))
+                    caches.match(event.request)
                 });
-            
-            return;
+            })
+            .catch(err => console.log(err))
+            );
+            return
         }
+
         event.respondWith(
             caches
                 .open(STATIC_CACHE)
