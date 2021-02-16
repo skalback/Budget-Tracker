@@ -40,33 +40,30 @@ self.addEventListener(`activate`, event => {
             });
 
 self.addEventListener(`fetch`, event => {
-    if (event.request.url.includes("/api/") && event.request.method !== "GET") {
+    if (event.request.url.includes("/api/transaction")) {
         event.respondWith(
           caches.open(RUNTIME_CACHE)
             .then(cache => {
                return fetch(event.request)
                 .then(response =>{
-                    cache.put(event.request, response.clone());
+                    cache.put(event.request.url, response.clone());
                     return response;
                 })
-                .catch(() => caches.match(event.request))
+                .catch(err => {
+                    caches.match(event.request))
                 });
             
             return;
         }
-    event.respondWith(
-            caches.match(event.request).then(cachedResponse => {
-                if (cachedResponse) {
-                    return cachedResponse;
-                }
-    
-                return caches
-                    .open(RUNTIME_CACHE)
-                    .then(cache =>
-                        fetch(event.request).then(response =>
-                            cache.put(event.request, response.clone()).then(() => response)
-                        )
-                    );
-            })
+        event.respondWith(
+            caches
+                .open(STATIC_CACHE)
+                .then(cache => {
+                    return cache.match(event.request)
+                        .then((response) => {
+                            return response || fetch(event.request);
+                        })
+                })
         );
     });
+    
