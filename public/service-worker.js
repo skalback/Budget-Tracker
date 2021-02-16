@@ -54,7 +54,7 @@ self.addEventListener(`fetch`, event => {
             
             return;
         }
- event.respondWith(
+    event.respondWith(
             caches.match(event.request).then(cachedResponse => {
                 if (cachedResponse) {
                     return cachedResponse;
